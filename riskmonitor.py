@@ -297,62 +297,6 @@ EMOJI = {
     'x': '❌',
 }
 
-# ============================================================================
-# TELEGRAM CONFIGURATION
-# ============================================================================
-
-TELEGRAM_BOT_TOKEN = "7993777288:AAGa_F9zgeG3K7l_L6YZCEOOPr35EIG8C3Q"
-TELEGRAM_CHAT_ID = "7959262031"
-TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
-
-
-def send_telegram_message(message: str, parse_mode: str = "HTML") -> bool:
-    """
-    Send a message to Telegram.
-    
-    Args:
-        message: Text to send (supports HTML formatting)
-        parse_mode: "HTML" or "Markdown"
-    
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    try:
-        url = f"{TELEGRAM_API_URL}/sendMessage"
-        payload = {
-            "chat_id": TELEGRAM_CHAT_ID,
-            "text": message,
-            "parse_mode": parse_mode,
-            "disable_web_page_preview": True,
-        }
-        response = requests.post(url, json=payload, timeout=10)
-        
-        if response.status_code == 200:
-            return True
-        else:
-            print(f"  ⚠️ Telegram error: {response.status_code} - {response.text}")
-            return False
-            
-    except Exception as e:
-        print(f"  ⚠️ Telegram exception: {e}")
-        return False
-
-
-def format_telegram_section(title: str, results: list, section_score: float) -> str:
-    """Format a section for Telegram message."""
-    score_emoji = EMOJI['green'] if section_score > 0.3 else EMOJI['red'] if section_score < -0.3 else EMOJI['yellow']
-    
-    lines = [f"\n<b>{title}</b> {score_emoji} ({section_score:+.2f})"]
-    lines.append("─" * 30)
-    
-    for row in results[:8]:  # Limit rows to avoid message too long
-        indicator = row.get('Indicator', '')[:12].ljust(12)
-        value = str(row.get('Value', ''))[:10].ljust(10)
-        change = str(row.get('Change', ''))[:10]
-        signal = row.get('Signal', '')
-        lines.append(f"<code>{indicator} {value} {change}</code> {signal}")
-    
-    return "\n".join(lines)
 
 
 # ============================================================================
